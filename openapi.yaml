@@ -1,126 +1,165 @@
 openapi: 3.0.0
 info:
-  title: サンプルAPI
-  description: GitHub PagesでSwagger UIをテストするためのサンプルAPI定義
+  title: Butler API
+  description: Butler API
   version: 1.0.0
 servers:
   - url: https://api.example.com/v1
     description: 本番環境
-  - url: https://staging-api.example.com/v1
-    description: ステージング環境
 
 paths:
-  /users:
-    get:
-      summary: ユーザー一覧の取得
-      description: 登録されているユーザーの一覧を取得します
-      parameters:
-        - name: page
-          in: query
-          description: ページ番号
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: limit
-          in: query
-          description: 1ページあたりの表示件数
-          required: false
-          schema:
-            type: integer
-            default: 10
+  /api/signup:
+    post:
+      summary: サインアップ
+      description: ユーザーサインアップ
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: ユーザーネーム
+                email:
+                  type: string
+                  format: email
+                  description: メールアドレス
+                password:
+                  type: string
+                  description: パスワード
+              required:
+                - name
+                - email
+                - password
       responses:
-        '200':
-          description: 成功
+        '201':
+          description: ユーザー登録成功
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/User'
-                  total:
-                    type: integer
-                    description: 総ユーザー数
+                  name:
+                    type: string
+                    description: ユーザーネーム
+                  message:
+                    type: string
+                    description: メッセージ
+                required:
+                  - message
+    
+  /api/signin:
     post:
-      summary: 新規ユーザーの作成
-      description: 新しいユーザーを作成します
+      summary: サインイン
+      description: ユーザーサインイン
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInput'
-      responses:
-        '201':
-          description: ユーザー作成成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-
-  /users/{userId}:
-    get:
-      summary: ユーザー詳細の取得
-      description: 指定されたIDのユーザー情報を取得します
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          description: ユーザーID
-          schema:
-            type: integer
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: メールアドレス
+                password:
+                  type: string
+                  description: パスワード
+              required:
+                - email
+                - password
       responses:
         '200':
-          description: 成功
+          description: ユーザー認証成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: ユーザーが見つかりません
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: ユーザーネーム
+                  message:
+                    type: string
+                    description: メッセージ
+                  token:
+                    type: string
+                    description: JWTトークン
+                required:
+                  - message
 
-components:
-  schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: ユーザーID
-        username:
-          type: string
-          description: ユーザー名
-        email:
-          type: string
-          format: email
-          description: メールアドレス
-        created_at:
-          type: string
-          format: date-time
-          description: 作成日時
-      required:
-        - id
-        - username
-        - email
-
-    UserInput:
-      type: object
-      properties:
-        username:
-          type: string
-          description: ユーザー名
-        email:
-          type: string
-          format: email
-          description: メールアドレス
-        password:
-          type: string
-          format: password
-          description: パスワード
-      required:
-        - username
-        - email
-        - password
+  /api/chats:
+    get:
+      summary: ユーザーのチャットルーム一覧
+      description: ユーザーのチャットルームを全て取得
+      responses:
+        '200':
+          description: チャットルーム取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chats:
+                    type: array
+                    description: チャットルーム一覧
+                    items:
+                      type: object
+                      properties:
+                        chat_id:
+                          type: string
+                          description: チャットルームID
+    post:
+      summary: チャット新規作成
+      description: チャット新規作成
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: private or group
+                chat_name:
+                  type: string
+                  description: チャットルーム名
+                participants:
+                  type: array
+                  description: チャット参加者
+              required:
+                - type
+                - participants
+      responses:
+        '201':
+          description: チャットルーム作成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chat_id:
+                    type: string
+                    description: チャットルームID
+                  type:
+                    type: string
+                    description: private or group
+                  chat_name:
+                    type: string
+                    description: チャットルーム名
+                  participants:
+                    type: array
+                    items:
+                      properties:
+                        uid:
+                          type: string
+                          description: ユーザーID
+                    description: チャット参加者
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: チャットルーム作成日時
+                  updated_at:
+                    type: string
+                    format: date-time
+                    description: チャットルーム更新日時
