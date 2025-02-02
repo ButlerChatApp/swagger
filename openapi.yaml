@@ -1,0 +1,126 @@
+openapi: 3.0.0
+info:
+  title: サンプルAPI
+  description: GitHub PagesでSwagger UIをテストするためのサンプルAPI定義
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+    description: 本番環境
+  - url: https://staging-api.example.com/v1
+    description: ステージング環境
+
+paths:
+  /users:
+    get:
+      summary: ユーザー一覧の取得
+      description: 登録されているユーザーの一覧を取得します
+      parameters:
+        - name: page
+          in: query
+          description: ページ番号
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: 1ページあたりの表示件数
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  total:
+                    type: integer
+                    description: 総ユーザー数
+    post:
+      summary: 新規ユーザーの作成
+      description: 新しいユーザーを作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: ユーザー作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{userId}:
+    get:
+      summary: ユーザー詳細の取得
+      description: 指定されたIDのユーザー情報を取得します
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ユーザーID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ユーザーが見つかりません
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ユーザーID
+        username:
+          type: string
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時
+      required:
+        - id
+        - username
+        - email
+
+    UserInput:
+      type: object
+      properties:
+        username:
+          type: string
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        password:
+          type: string
+          format: password
+          description: パスワード
+      required:
+        - username
+        - email
+        - password
