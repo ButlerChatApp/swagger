@@ -127,6 +127,12 @@ paths:
                 participants:
                   type: array
                   description: チャット参加者
+                  items:
+                    type: object
+                    properties:
+                      uid:
+                        type: string
+                        description: ユーザーID
               required:
                 - type
                 - participants
@@ -150,6 +156,7 @@ paths:
                   participants:
                     type: array
                     items:
+                      type: object
                       properties:
                         uid:
                           type: string
@@ -163,3 +170,129 @@ paths:
                     type: string
                     format: date-time
                     description: チャットルーム更新日時
+
+  /api/messages:
+    get:
+      summary: チャットルームのメッセージ取得
+      description: 指定されたチャットルームのメッセージを取得
+      parameters:
+        - name: chat_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 取得するチャットルームのID
+      responses:
+        '200':
+          description: メッセージ取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    description: メッセージ一覧
+                    items:
+                      type: object
+                      properties:
+                        message_id:
+                          type: string
+                          description: メッセージID
+                        chat_id:
+                          type: string
+                          description: チャットルームID
+                        sender_id:
+                          type: string
+                          description: 送信者のユーザーID
+                        content:
+                          type: string
+                          description: メッセージ内容
+                        timestamp:
+                          type: string
+                          format: date-time
+                          description: メッセージ送信日時
+    post:
+      summary: メッセージ送信
+      description: 指定されたチャットルームにメッセージを送信
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chat_id:
+                  type: string
+                  description: 送信先のチャットルームID
+                sender_id:
+                  type: string
+                  description: 送信者のユーザーID
+                content:
+                  type: string
+                  description: メッセージ内容
+              required:
+                - chat_id
+                - sender_id
+                - content
+      responses:
+        '201':
+          description: メッセージ送信成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message_id:
+                    type: string
+                    description: メッセージID
+                  chat_id:
+                    type: string
+                    description: チャットルームID
+                  sender_id:
+                    type: string
+                    description: 送信者のユーザーID
+                  content:
+                    type: string
+                    description: メッセージ内容
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: メッセージ送信日時
+    delete:
+      summary: メッセージ取り消し
+      description: 指定されたメッセージを削除
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message_id:
+                  type: string
+                  description: 取り消すメッセージのID
+              required:
+                - message_id
+      responses:
+        '200':
+          description: メッセージ取り消し成功
+    put:
+      summary: メッセージ編集
+      description: 指定されたメッセージの内容を編集
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message_id:
+                  type: string
+                  description: 編集するメッセージのID
+                new_content:
+                  type: string
+                  description: 更新後のメッセージ内容
+              required:
+                - message_id
+                - new_content
+      responses:
+        '200':
+          description: メッセージ編集成功
