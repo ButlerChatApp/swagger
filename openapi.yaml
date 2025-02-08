@@ -121,7 +121,7 @@ paths:
                 type:
                   type: string
                   description: private or group
-                chat_name:
+                chatName:
                   type: string
                   description: チャットルーム名
                 participants:
@@ -144,13 +144,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  chat_id:
+                  chatId:
                     type: string
                     description: チャットルームID
                   type:
                     type: string
                     description: private or group
-                  chat_name:
+                  chatName:
                     type: string
                     description: チャットルーム名
                   participants:
@@ -162,11 +162,11 @@ paths:
                           type: string
                           description: ユーザーID
                     description: チャット参加者
-                  created_at:
+                  createdAt:
                     type: string
                     format: date-time
                     description: チャットルーム作成日時
-                  updated_at:
+                  updatedAt:
                     type: string
                     format: date-time
                     description: チャットルーム更新日時
@@ -176,7 +176,7 @@ paths:
       summary: チャットルームのメッセージ取得
       description: 指定されたチャットルームのメッセージを取得
       parameters:
-        - name: chat_id
+        - name: chatId
           in: query
           required: true
           schema:
@@ -196,13 +196,13 @@ paths:
                     items:
                       type: object
                       properties:
-                        message_id:
+                        messageId:
                           type: string
                           description: メッセージID
-                        chat_id:
+                        chatId:
                           type: string
                           description: チャットルームID
-                        sender_id:
+                        senderId:
                           type: string
                           description: 送信者のユーザーID
                         content:
@@ -221,18 +221,18 @@ paths:
             schema:
               type: object
               properties:
-                chat_id:
+                chatId:
                   type: string
                   description: 送信先のチャットルームID
-                sender_id:
+                senderId:
                   type: string
                   description: 送信者のユーザーID
                 content:
                   type: string
                   description: メッセージ内容
               required:
-                - chat_id
-                - sender_id
+                - chatId
+                - senderId
                 - content
       responses:
         '201':
@@ -242,13 +242,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  message_id:
+                  messageId:
                     type: string
                     description: メッセージID
-                  chat_id:
+                  chatId:
                     type: string
                     description: チャットルームID
-                  sender_id:
+                  senderId:
                     type: string
                     description: 送信者のユーザーID
                   content:
@@ -267,11 +267,11 @@ paths:
             schema:
               type: object
               properties:
-                message_id:
+                messageId:
                   type: string
                   description: 取り消すメッセージのID
               required:
-                - message_id
+                - messageId
       responses:
         '200':
           description: メッセージ取り消し成功
@@ -284,15 +284,15 @@ paths:
             schema:
               type: object
               properties:
-                message_id:
+                messageId:
                   type: string
                   description: 編集するメッセージのID
-                new_content:
+                newContent:
                   type: string
                   description: 更新後のメッセージ内容
               required:
-                - message_id
-                - new_content
+                - messageId
+                - newContent
       responses:
         '200':
           description: メッセージ編集成功
