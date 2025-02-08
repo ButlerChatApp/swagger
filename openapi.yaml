@@ -296,3 +296,128 @@ paths:
       responses:
         '200':
           description: メッセージ編集成功
+  /api/summary:
+    post:
+      summary: 選択したチャットメッセージの要約を作成
+      description: 指定されたメッセージ内容をAIに要約させます
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uid:
+                  type: string
+                  description: 要約作成をリクエストしたユーザーID
+                content:
+                  type: string
+                  description: 選択されたチャット上のメッセージ
+      responses:
+        '200':
+          description: 要約作成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summaryId:
+                    type: string
+                    format: uuid
+                    description: 要約のデータのID
+        '400':
+          description: 無効なリクエスト（パラメータ不足・形式不正など）
+        '500':
+          description: サーバーエラー
+
+    get:
+      summary: ユーザーの要約データを取得
+      description: 指定されたユーザーIDに紐づく要約データID一覧を取得します
+      parameters:
+        - name: uid
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 要約を保有するユーザーID
+      responses:
+        '200':
+          description: 要約データ取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summaries:
+                    type: array
+                    description: 要約データIDの配列
+                    items:
+                      type: string
+                      format: uuid
+        '400':
+          description: 無効なリクエスト（パラメータ不足・形式不正など）
+        '404':
+          description: 指定したユーザーの要約データが見つからない
+        '500':
+          description: サーバーエラー
+
+    delete:
+      summary: 要約データの削除
+      description: 指定した要約データを削除します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                summaryId:
+                  type: string
+                  format: uuid
+                  description: 削除する要約データのID
+      responses:
+        '200':
+          description: 要約データ削除成功
+        '400':
+          description: 無効なリクエスト（パラメータ不足・形式不正など）
+        '404':
+          description: 指定した要約データが見つからない
+        '500':
+          description: サーバーエラー
+  /api/summary/{summaryId}:
+    get:
+      summary: 特定の要約データの詳細を取得
+      description: 指定された要約データIDに紐づく要約結果を取得します
+      parameters:
+        - name: summaryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: 取得する要約データのID
+      responses:
+        '200':
+          description: 要約データ取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summaryId:
+                    type: string
+                    format: uuid
+                    description: 要約データのID
+                  summary:
+                    type: string
+                    description: AIによる要約結果
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: 要約データの作成日時
+        '400':
+          description: 無効なリクエスト（パラメータ不足・形式不正など）
+        '404':
+          description: 指定した要約データが見つからない
+        '500':
+          description: サーバーエラー
